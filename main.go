@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -23,7 +24,15 @@ func main() {
 		}
 
 		source := interpreter.OpenFile(fname)
-		source.DebugSource()
+		lexer := interpreter.NewLex(source.SourceFile)
+
+		for {
+			tok := lexer.ReadNextToken()
+			fmt.Printf("Token Type: %v, Literal: %q\n", tok.Type, tok.Literal)
+			if tok.Type == interpreter.EOF {
+				break
+			}
+		}
 	} else if len(args) > 2 {
 		symerr.ErrorMessage(
 			"Only provide one source file as input.",
@@ -38,6 +47,5 @@ func main() {
 		)
 	}
 
-	// If everything is fine, you can continue normally or exit with 0
 	os.Exit(0)
 }
