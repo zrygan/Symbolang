@@ -1,8 +1,10 @@
-package interpreter
+package lexer
 
 import (
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/zrygan/symbolang/tokens"
 )
 
 type Lex struct {
@@ -50,27 +52,27 @@ func (l *Lex) readStringLiteral() string {
 
 // ReadNextToken() uses the lexer to read the next token.
 // Tokens are available at interpreter/tokens.go
-func (l *Lex) ReadNextToken() Token {
+func (l *Lex) ReadNextToken() tokens.Token {
 	for unicode.IsSpace(l.c) {
 		l.readChar()
 	}
 
 	if l.c == 0 {
-		return NewToken(EOF, "")
+		return tokens.NewToken(tokens.EOF, "")
 	}
 
 	// check if this token is an emoji (we handle this with care since emojis
 	// are NOT runes or single width characters)!
-	emoji, tokType, isEmoji := IsEmojiAt(l.input, l.pos)
+	emoji, tokType, isEmoji := tokens.IsEmojiAt(l.input, l.pos)
 	if isEmoji {
 		l.advanceBy(len(emoji))
-		return NewToken(tokType, emoji)
+		return tokens.NewToken(tokType, emoji)
 	}
 
 	// handle string literals
 	if l.c == '"' {
 		str := l.readStringLiteral()
-		return NewToken(Literal, str)
+		return tokens.NewToken(tokens.Literal, str)
 	}
 
 	// for other literals (numbers and variables)
@@ -79,7 +81,7 @@ func (l *Lex) ReadNextToken() Token {
 		l.readChar()
 	}
 	literal := l.input[start:l.pos]
-	return NewToken(Literal, literal)
+	return tokens.NewToken(tokens.Literal, literal)
 }
 
 // advanceBy() moved the lexer pointer by n units or characters.

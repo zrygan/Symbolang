@@ -1,4 +1,4 @@
-package interpreter
+package lexer
 
 type Source struct {
 	SourceFile string
