@@ -6,7 +6,7 @@ import (
 )
 
 type ErrorType struct {
-	ReadError bool
+	FatalErr bool
 }
 
 func ErrorMessage(message string, hint string, et *ErrorType) {
@@ -15,7 +15,9 @@ func ErrorMessage(message string, hint string, et *ErrorType) {
 		fmt.Println("\t🔍 Hint:\t", hint)
 	}
 
-	if et.ReadError {
+	if et == nil {
+		os.Exit(0)
+	} else if et.FatalErr {
 		os.Exit(1)
 	}
 }
