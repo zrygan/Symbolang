@@ -9,26 +9,24 @@ import (
 	"github.com/zrygan/symbolang/symerr"
 )
 
-func OpenFile(fname string) Source {
+func OpenFile(fname string) *Source {
 	file, err := os.Open(fname)
 	if err != nil {
 		symerr.ErrorMessage(
-			"Error with opening the file. \n"+err.Error(),
+			"Error with opening the file.\n"+err.Error(),
 			"",
 			&symerr.ErrorType{FatalErr: true},
 		)
 	}
+	defer file.Close()
 
+	var sourceBuilder strings.Builder
 	reader := bufio.NewReader(file)
-	var source []string
 	for {
 		line, err := reader.ReadString('\n')
+		sourceBuilder.WriteString(line) // append whole line including newline
 		if err != nil {
 			if err == io.EOF {
-				if len(line) > 0 {
-					words := strings.Split(line, " ")
-					source = append(source, words...)
-				}
 				break
 			}
 			symerr.ErrorMessage(
@@ -37,9 +35,8 @@ func OpenFile(fname string) Source {
 				&symerr.ErrorType{FatalErr: true},
 			)
 		}
-		words := strings.Split(line, " ")
-		source = append(source, words...)
 	}
 
+	source := sourceBuilder.String()
 	return NewSource(source)
 }
