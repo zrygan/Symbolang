@@ -36,6 +36,12 @@ func (p *Parser) ParseProgram() []Statement {
 		case tokens.Paper:
 			stmt := p.ParseVariable()
 			statements = append(statements, stmt)
+		case tokens.Rock:
+			stmt := p.ParseConst()
+			statements = append(statements, stmt)
+		case tokens.Scissor:
+			stmt := p.ParseDelete()
+			statements = append(statements, stmt)
 		default:
 			symerr.ErrorMessage(
 				"Source code includes an unrecognized emoji.",
@@ -68,17 +74,7 @@ func (p *Parser) ParsePrintStatement() *PrintStatement {
 		)
 	}
 
-	p.nextToken()
-
-	if p.CurTok.Type != tokens.Stop {
-		symerr.ErrorMessage(
-			"A ✏️ or 🖊️ statement is not closed by a 🫷 emoji.",
-			"",
-			&symerr.ErrorType{FatalErr: true},
-		)
-	} else {
-		p.nextToken()
-	}
+	p.checkForStop()
 
 	return stmt
 }
@@ -112,17 +108,64 @@ func (p *Parser) ParseVariable() *VariableStatement {
 	// TODO: could convert to int/float if needed
 	stmt.Value = p.CurTok.Literal
 
+	p.checkForStop()
+
+	return stmt
+}
+
+func (p *Parser) ParseConst() *ConstStatement {
+	stmt := &ConstStatement{}
+
+	// Move after declare constant emoji
 	p.nextToken()
 
-	if p.CurTok.Type != tokens.Stop {
+	// Expect a variable name (identifier)
+	if p.CurTok.Type != tokens.Identifier {
 		symerr.ErrorMessage(
-			"📃 statement is not closed by a 🫷 emoji.",
-			"",
+			"📃 statement missing a variable name.",
+			"Example: 📃 x 100",
 			&symerr.ErrorType{FatalErr: true},
 		)
-	} else {
-		p.nextToken()
 	}
+	stmt.Name = p.CurTok.Literal
+
+	p.nextToken()
+
+	// Expect a literal value
+	if p.CurTok.Type != tokens.Literal {
+		symerr.ErrorMessage(
+			"🪨 statement missing a literal value.",
+			"Example: 🪨 <identifier> <literal>",
+			&symerr.ErrorType{FatalErr: true},
+		)
+	}
+	// TODO: could convert to int/float if needed
+	stmt.Value = p.CurTok.Literal
+
+	p.checkForStop()
+
+	return stmt
+}
+
+func (p *Parser) ParseDelete() *DeleteStatement {
+	stmt := &DeleteStatement{}
+
+	// move after delete emoji
+	p.nextToken()
+
+	// expect an identifier
+	if p.CurTok.Type != tokens.Identifier {
+		symerr.ErrorMessage(
+			"✂️ statement missing a identifier name.",
+			"Example: 📃 <identifier>",
+			&symerr.ErrorType{FatalErr: true},
+		)
+	}
+	stmt.Name = p.CurTok.Literal
+
+	// then the stop emoji
+
+	p.checkForStop()
 
 	return stmt
 }

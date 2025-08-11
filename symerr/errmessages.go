@@ -7,6 +7,8 @@ import (
 
 type ErrorType struct {
 	FatalErr bool
+	ConstErr bool
+	DelErr   bool
 }
 
 func ErrorMessage(message string, hint string, et *ErrorType) {
@@ -19,5 +21,7 @@ func ErrorMessage(message string, hint string, et *ErrorType) {
 		os.Exit(0)
 	} else if et.FatalErr {
 		os.Exit(1)
+	} else if et.ConstErr {
+		return
 	}
 }
