@@ -12,7 +12,7 @@ type ErrorType struct {
 func ErrorMessage(message string, hint string, et *ErrorType) {
 	fmt.Println("⚠️ Symbolang:", message)
 	if hint != "" {
-		fmt.Println("\t🔍 Hint:\t", hint)
+		fmt.Println("\t🔍 Hint: ", hint)
 	}
 
 	if et == nil {
