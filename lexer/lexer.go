@@ -20,6 +20,19 @@ func NewLex(input string) *Lex {
 	return l
 }
 
+func (l *Lex) LexSource() {
+	// var toks []tokens.Token
+	for {
+		tok := l.ReadNextToken()
+		// toks = append(toks, tok)
+		if tok.Type == tokens.EOF {
+			break
+		}
+	}
+
+	// return toks
+}
+
 // readChar() reads the current character at the lexer pointer then moves it.
 func (l *Lex) readChar() {
 	if l.readPos >= len(l.input) {
