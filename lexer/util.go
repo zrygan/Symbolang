@@ -5,6 +5,8 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/zrygan/symbolang/symerr"
 )
@@ -39,4 +41,20 @@ func OpenFile(fname string) *Source {
 
 	source := sourceBuilder.String()
 	return NewSource(source)
+}
+
+func isLetter(ch rune) bool {
+	return unicode.IsLetter(ch) || ch == '_'
+}
+
+// advanceBy() moved the lexer pointer by n units or characters.
+func (l *Lex) advanceBy(n int) {
+	l.pos += n
+	l.readPos = l.pos
+	if l.pos >= len(l.input) {
+		l.c = 0
+		return
+	}
+	r, _ := utf8.DecodeRuneInString(l.input[l.pos:])
+	l.c = r
 }

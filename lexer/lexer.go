@@ -20,19 +20,6 @@ func NewLex(input string) *Lex {
 	return l
 }
 
-func (l *Lex) LexSource() {
-	// var toks []tokens.Token
-	for {
-		tok := l.ReadNextToken()
-		// toks = append(toks, tok)
-		if tok.Type == tokens.EOF {
-			break
-		}
-	}
-
-	// return toks
-}
-
 // readChar() reads the current character at the lexer pointer then moves it.
 func (l *Lex) readChar() {
 	if l.readPos >= len(l.input) {
@@ -82,29 +69,33 @@ func (l *Lex) ReadNextToken() tokens.Token {
 		return tokens.NewToken(tokType, emoji)
 	}
 
-	// handle string literals
 	if l.c == '"' {
 		str := l.readStringLiteral()
 		return tokens.NewToken(tokens.Literal, str)
 	}
 
-	// for other literals (numbers and variables)
-	start := l.pos
-	for l.c != 0 && !unicode.IsSpace(l.c) && !isEmoji {
-		l.readChar()
+	// Check if identifier (letter or _)
+	if isLetter(l.c) {
+		start := l.pos
+		for isLetter(l.c) || unicode.IsDigit(l.c) {
+			l.readChar()
+		}
+		literal := l.input[start:l.pos]
+		return tokens.NewToken(tokens.Identifier, literal)
 	}
-	literal := l.input[start:l.pos]
-	return tokens.NewToken(tokens.Literal, literal)
-}
 
-// advanceBy() moved the lexer pointer by n units or characters.
-func (l *Lex) advanceBy(n int) {
-	l.pos += n
-	l.readPos = l.pos
-	if l.pos >= len(l.input) {
-		l.c = 0
-		return
+	// Check if number
+	if unicode.IsDigit(l.c) {
+		start := l.pos
+		for unicode.IsDigit(l.c) {
+			l.readChar()
+		}
+		literal := l.input[start:l.pos]
+		return tokens.NewToken(tokens.Literal, literal)
 	}
-	r, _ := utf8.DecodeRuneInString(l.input[l.pos:])
-	l.c = r
+
+	// fallback unknown single char token
+	ch := string(l.c)
+	l.readChar()
+	return tokens.NewToken(tokens.Illegal, ch)
 }
