@@ -64,8 +64,12 @@ func (p *Parser) ParsePrintStatement() *PrintStatement {
 	// consume print emoji
 	p.nextToken()
 
-	if p.CurTok.Type == tokens.Literal || p.CurTok.Type == tokens.Identifier {
+	if p.CurTok.Type == tokens.Literal {
 		stmt.Value = p.CurTok.Literal
+		stmt.ValueType = tokens.Literal
+	} else if p.CurTok.Type == tokens.Identifier {
+		stmt.Value = p.CurTok.Literal
+		stmt.ValueType = tokens.Identifier
 	} else {
 		symerr.ErrorMessage(
 			"A ✏️ or 🖊️ statement must have a literal or identifier input.",
@@ -88,8 +92,8 @@ func (p *Parser) ParseVariable() *VariableStatement {
 	// Expect a variable name (identifier)
 	if p.CurTok.Type != tokens.Identifier {
 		symerr.ErrorMessage(
-			"📃 statement missing a variable name.",
-			"Example: 📃 x 100",
+			"📃 statement missing a identifier.",
+			"Example: 📃 <identifier> <literal>.",
 			&symerr.ErrorType{FatalErr: true},
 		)
 	}
@@ -101,7 +105,7 @@ func (p *Parser) ParseVariable() *VariableStatement {
 	if p.CurTok.Type != tokens.Literal {
 		symerr.ErrorMessage(
 			"📃 statement missing a literal value.",
-			"Example: 📃 <identifier> <literal>",
+			"Example: 📃 <identifier> <literal>.",
 			&symerr.ErrorType{FatalErr: true},
 		)
 	}
@@ -122,8 +126,8 @@ func (p *Parser) ParseConst() *ConstStatement {
 	// Expect a variable name (identifier)
 	if p.CurTok.Type != tokens.Identifier {
 		symerr.ErrorMessage(
-			"📃 statement missing a variable name.",
-			"Example: 📃 x 100",
+			"📃 statement missing a constant identifier.",
+			"Example: 📃 <identifier> <literal>.",
 			&symerr.ErrorType{FatalErr: true},
 		)
 	}
@@ -134,8 +138,8 @@ func (p *Parser) ParseConst() *ConstStatement {
 	// Expect a literal value
 	if p.CurTok.Type != tokens.Literal {
 		symerr.ErrorMessage(
-			"🪨 statement missing a literal value.",
-			"Example: 🪨 <identifier> <literal>",
+			"🪨 statement missing a constant literal value.",
+			"Example: 🪨 <identifier> <literal>.",
 			&symerr.ErrorType{FatalErr: true},
 		)
 	}
@@ -157,7 +161,7 @@ func (p *Parser) ParseDelete() *DeleteStatement {
 	if p.CurTok.Type != tokens.Identifier {
 		symerr.ErrorMessage(
 			"✂️ statement missing a identifier name.",
-			"Example: 📃 <identifier>",
+			"Example: ✂️ <identifier>.",
 			&symerr.ErrorType{FatalErr: true},
 		)
 	}

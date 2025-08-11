@@ -14,13 +14,23 @@ type Statement interface {
 type PrintStatement struct {
 	PrintType tokens.TokenType
 	Value     string
+	ValueType tokens.TokenType
 }
 
 func (ps *PrintStatement) Execute() {
-	output, exists := globalEnv[ps.Value]
-	if !exists {
-		// treat as literal
-		output = ps.Value
+	var output interface{} = ps.Value
+
+	// if it's a literal we don't care (no pre-processing)
+	if ps.ValueType == tokens.Identifier {
+		val, exists := globalEnv[ps.Value]
+		if !exists {
+			symerr.ErrorMessage(
+				"A ✏️ or 🖊️ statement uses a non-existent idenf fier: "+ps.Value+".",
+				"",
+				&symerr.ErrorType{VarErr: true},
+			)
+		}
+		output = val
 	}
 
 	switch ps.PrintType {
@@ -52,8 +62,8 @@ func (cs *ConstStatement) Execute() {
 		globalEnv[cs.Name] = cs.Value
 	} else {
 		symerr.ErrorMessage(
-			"The constant variable "+cs.Name+" is redeclared",
-			"You cannot redeclare constants",
+			"The constant variable "+cs.Name+" is redeclared.",
+			"You cannot redeclare constants.",
 			&symerr.ErrorType{ConstErr: true},
 		)
 	}
@@ -70,8 +80,8 @@ func (ds *DeleteStatement) Execute() {
 		delete(globalEnv, ds.Name)
 	} else {
 		symerr.ErrorMessage(
-			"A non-existent identifier "+ds.Name+" was tried to be deleted",
-			"You cannot delete non-existent identifiers",
+			"A non-existent identifier "+ds.Name+" was tried to be deleted.",
+			"You cannot delete non-existent identifiers.",
 			&symerr.ErrorType{DelErr: true},
 		)
 	}
