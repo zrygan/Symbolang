@@ -13,6 +13,12 @@ func IsEmojiAt(input string, pos int) (string, TokenType, bool) {
 				return emoji, Pencil, true
 			case EmojiPen:
 				return emoji, Pen, true
+			case EmojiPaper:
+				return emoji, Paper, true
+			case EmojiRock:
+				return emoji, Rock, true
+			case EmojiScissor:
+				return emoji, Scissor, true
 			}
 		}
 	}
