@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
-	"github.com/zrygan/symbolang/interpreter"
+	"github.com/zrygan/symbolang/lexer"
+	"github.com/zrygan/symbolang/parser"
 	"github.com/zrygan/symbolang/symerr"
 )
 
@@ -23,16 +23,16 @@ func main() {
 			)
 		}
 
-		source := interpreter.OpenFile(fname)
-		lexer := interpreter.NewLex(source.SourceFile)
+		s := lexer.OpenFile(fname)
+		l := lexer.NewLex(s.SourceFile)
+		p := parser.NewParser(l)
 
-		for {
-			tok := lexer.ReadNextToken()
-			fmt.Printf("Token Type: %v, Literal: %q\n", tok.Type, tok.Literal)
-			if tok.Type == interpreter.EOF {
-				break
-			}
+		program := p.ParseProgram()
+
+		for _, stmt := range program {
+			stmt.Execute()
 		}
+
 	} else if len(args) > 2 {
 		symerr.ErrorMessage(
 			"Only provide one source file as input.",
