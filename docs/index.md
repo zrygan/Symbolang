@@ -2,6 +2,27 @@
 
 These are all implemented (and some planned) features of Symbolang. Each example has a C code equivalent (if none exist, a Python may be provided).
 
+## Getting Started
+
+All Symbolang source files have the `.🤓` extension.
+
+To interpret your source file, simply
+```bash
+$ symbolang.exe <fileName>
+```
+
+Or, if you have the repository cloned:
+```bash
+go run main.go <fileName>
+```
+
+Interpreting Options:
+```
+-dp     : Show debug messages for the parsing stage of the interpreter.
+-dt     : Show debug messages for the tokens produced by the tokenization stage.
+-dall   : show all debug messages.
+```
+
 ## Printing Emojis
 There are two printing functions in Symbolang. One for basic print (`print`) and another for printing with a new line (`println`).
 
