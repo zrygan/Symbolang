@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/zrygan/symbolang/lexer"
+	"github.com/zrygan/symbolang/options"
 	"github.com/zrygan/symbolang/parser"
 	"github.com/zrygan/symbolang/symerr"
 )
@@ -12,8 +13,9 @@ import (
 func main() {
 	args := os.Args
 
-	if len(args) == 2 {
+	if len(args) >= 2 {
 		fname := args[1]
+		opts := args[2:]
 
 		if !strings.HasSuffix(fname, ".🤓") {
 			symerr.ErrorMessage(
@@ -22,6 +24,8 @@ func main() {
 				&symerr.ErrorType{FatalErr: true},
 			)
 		}
+
+		options.Options(opts)
 
 		s := lexer.OpenFile(fname)
 		l := lexer.NewLex(s.SourceFile)
@@ -33,12 +37,6 @@ func main() {
 			stmt.Execute()
 		}
 
-	} else if len(args) > 2 {
-		symerr.ErrorMessage(
-			"Only provide one source file as input.",
-			"Use `go run main.go <fileName>`.",
-			&symerr.ErrorType{FatalErr: true},
-		)
 	} else {
 		symerr.ErrorMessage(
 			"No source file provided.",

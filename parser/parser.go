@@ -23,11 +23,13 @@ func (p *Parser) ParseProgram() []Statement {
 	statements := []Statement{}
 
 	for p.CurTok.Type != tokens.EOF {
-		// symerr.DebugMessage(
-		// 	"ParseProgram",
-		// 	p.CurTok.Type,
-		// 	p.CurTok.Literal,
-		// )
+		if symerr.DebugFlags["ParseProgram"] {
+			symerr.DebugMessage(
+				"ParseProgram",
+				p.CurTok.Type,
+				p.CurTok.Literal,
+			)
+		}
 
 		switch p.CurTok.Type {
 		case tokens.Pencil, tokens.Pen:

@@ -2,14 +2,16 @@ package symerr
 
 import "fmt"
 
-var globalDebug = true
+// Debugging Booleans
+var DebugFlags = map[string]bool{
+	"ParseProgram": false,
+	"NextToken":    false,
+}
 
 func DebugMessage(messages ...any) {
-	if globalDebug {
-		fmt.Println("--- @ ", messages[0])
-		for _, message := range messages[1:] {
-			fmt.Println("ℹ️\tDebug: ", message)
-		}
-		fmt.Println("---")
+	fmt.Println("--- @ ", messages[0])
+	for _, message := range messages[1:] {
+		fmt.Println("ℹ️\tDebug: ", message)
 	}
+	fmt.Println("---")
 }

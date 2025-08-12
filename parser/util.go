@@ -9,11 +9,13 @@ func (p *Parser) nextToken() {
 	p.CurTok = p.peekTok
 	p.peekTok = p.Lexer.ReadNextToken()
 
-	symerr.DebugMessage(
-		"nextToken",
-		p.CurTok.Type,
-		p.CurTok.Literal,
-	)
+	if symerr.DebugFlags["NextToken"] {
+		symerr.DebugMessage(
+			"nextToken",
+			p.CurTok.Type,
+			p.CurTok.Literal,
+		)
+	}
 }
 
 func (p *Parser) checkForStop() {
